@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode, type FormEvent } from 'react';
 import { Link, useRouterState } from '@tanstack/react-router';
-import { ArrowRight, ChevronDown, Menu, LoaderCircle, Mail, Phone, Facebook, Linkedin, Twitter, MessageCircle } from 'lucide-react';
+import { ArrowRight, ChevronDown, Menu, LoaderCircle, Mail, Phone, Facebook, Linkedin, Twitter, MessageCircle, ShoppingCart, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import crest from "@/assets/cvsz-logo.png";
@@ -13,17 +13,55 @@ const navigation = [
   { name: 'Home', to: '/' }, { name: 'About Us', to: '/about' }, { name: 'Our Professions', to: '/professions' },
   { name: 'News & Updates', to: '/news' }, { name: 'FAQ', to: '/faq' }, { name: 'Complaints', to: '/complaints' }, { name: 'Contact Us', to: '/contact' },
 ] as const;
-const mainNavigation = navigation.filter(item => item.to !== '/news' && item.to !== '/faq');
+const mainNavigation = navigation.filter(item => item.to !== '/news' && item.to !== '/faq' && item.to !== '/complaints');
 const secondaryNavigation = [
+  { name: 'Complaints', to: '/complaints' },
   { name: 'News & Updates', to: '/news' },
   { name: 'FAQs', to: '/faq' },
   { name: 'Privacy Policy', to: '/privacy-policy' },
   { name: 'Terms of Use', to: '/terms-of-use' },
 ] as const;
 
+const paymentServices = [
+  { id: 'registration-fee', name: 'Registration fee', amount: 125 },
+  { id: 'certificate-of-registration', name: 'Certificate of registration', amount: 25 },
+  { id: 'annual-fee', name: 'Annual fee', amount: 150 },
+  { id: 'surgery-licencing-fee', name: 'Surgery licencing fee', amount: 250 },
+  { id: 'hospital-licensing-fees', name: 'Hospital Licensing fees', amount: 300 },
+  { id: 'letter-of-good-standing', name: 'Letter of Good Standing', amount: 75 },
+] as const;
+type PaymentServiceId = typeof paymentServices[number]['id'];
+type PaymentCartContextValue = {
+  cart: PaymentServiceId[];
+  itemCount: number;
+  subtotal: number;
+  addItem: (id: PaymentServiceId) => void;
+  removeItem: (id: PaymentServiceId) => void;
+  openCart: () => void;
+};
+const PaymentCartContext = createContext<PaymentCartContextValue>({
+  cart: [],
+  itemCount: 0,
+  subtotal: 0,
+  addItem: () => {},
+  removeItem: () => {},
+  openCart: () => {},
+});
+
 export function CouncilSite({ children }: { children: ReactNode }) {
   const [kind, setKind] = useState<ModalKind>(null);
-  return <ModalContext.Provider value={setKind}><Header />{children}<Footer /><CouncilModal kind={kind} onClose={() => setKind(null)} /><WhatsAppWidget /></ModalContext.Provider>;
+  const [cart, setCart] = useState<PaymentServiceId[]>([]);
+  const [cartOpen, setCartOpen] = useState(false);
+  const subtotal = cart.reduce((total, id) => total + paymentServices.find(service => service.id === id)!.amount, 0);
+  const paymentCart: PaymentCartContextValue = {
+    cart,
+    itemCount: cart.length,
+    subtotal,
+    addItem: id => setCart(current => current.includes(id) ? current : [...current, id]),
+    removeItem: id => setCart(current => current.filter(item => item !== id)),
+    openCart: () => setCartOpen(true),
+  };
+  return <PaymentCartContext.Provider value={paymentCart}><ModalContext.Provider value={setKind}><Header />{children}<Footer /><CouncilModal kind={kind} onClose={() => setKind(null)} /><CartDrawer open={cartOpen} onOpenChange={setCartOpen} /><WhatsAppWidget /></ModalContext.Provider></PaymentCartContext.Provider>;
 }
 
 function WhatsAppWidget() {
@@ -31,12 +69,16 @@ function WhatsAppWidget() {
 }
 
 function Header() {
+  const { itemCount, openCart } = useContext(PaymentCartContext);
   const isHome = useRouterState({ select: state => state.location.pathname === '/' });
   const [scrolled, setScrolled] = useState(false);
   const [mobile, setMobile] = useState(false);
   const [practices, setPractices] = useState(false);
+  const [paymentsOpen, setPaymentsOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const dropdown = useRef<HTMLDivElement>(null);
+  const paymentsDropdown = useRef<HTMLDivElement>(null);
+  const mobilePaymentsDropdown = useRef<HTMLDivElement>(null);
   const accountDropdown = useRef<HTMLDivElement>(null);
   const mobileAccountDropdown = useRef<HTMLDivElement>(null);
   const accountTrigger = useRef<HTMLButtonElement>(null);
@@ -49,6 +91,7 @@ function Header() {
     const dismiss = (event: MouseEvent) => {
       if (!(event.target instanceof Node)) return;
       if (!dropdown.current?.contains(event.target)) setPractices(false);
+      if (!paymentsDropdown.current?.contains(event.target) && !mobilePaymentsDropdown.current?.contains(event.target)) setPaymentsOpen(false);
       if (!accountDropdown.current?.contains(event.target) && !mobileAccountDropdown.current?.contains(event.target)) setAccountOpen(false);
     };
     document.addEventListener('click', dismiss); return () => document.removeEventListener('click', dismiss);
@@ -97,6 +140,12 @@ function Header() {
                 <Link to="/practices" hash="guidance" className="block p-3 text-sm hover:bg-surface" onClick={() => setPractices(false)}>Guidance for animal owners</Link>
               </div>}
             </div>
+            <div className="relative" ref={paymentsDropdown} onKeyDown={event => {
+              if (event.key === 'Escape') setPaymentsOpen(false);
+            }}>
+              <Button variant="ghost" className="nav-link h-auto" aria-expanded={paymentsOpen} aria-controls="payment-menu" onClick={() => setPaymentsOpen(value => !value)}>Payments<ChevronDown className="size-3" /></Button>
+              {paymentsOpen && <PaymentMenu id="payment-menu" />}
+            </div>
             {mainNavigation.slice(3).map(item => <Link key={item.to} to={item.to} className="nav-link">{item.name}</Link>)}
           </nav>
             <div className="account-menu" ref={accountDropdown} onKeyDown={event => {
@@ -108,6 +157,7 @@ function Header() {
               <Button ref={accountTrigger} variant="gold" className="hidden shrink-0 rounded-full text-xs min-[981px]:inline-flex" aria-expanded={accountOpen} aria-controls="desktop-account-menu" onClick={() => setAccountOpen(value => !value)}>Login / Register<ChevronDown className="size-3" /></Button>
               {accountOpen && <div id="desktop-account-menu" className="account-dropdown"><AccountMenuOptions onNavigate={() => setAccountOpen(false)} /></div>}
             </div>
+          <CartButton itemCount={itemCount} onClick={openCart} />
         </div>
         <Button variant="hero" size="icon" className="mobile-toggle border-0" aria-label="Open navigation" onClick={() => setMobile(true)}><Menu /></Button>
       </div>
@@ -115,14 +165,63 @@ function Header() {
     <Dialog open={mobile} onOpenChange={value => { setMobile(value); if (!value) setAccountOpen(false); }}><DialogContent className="inset-y-0 left-auto right-0 h-svh max-h-svh w-[min(90vw,380px)] translate-x-0 translate-y-0 overflow-y-auto rounded-none bg-institution p-7 text-hero-foreground sm:rounded-none">
       <DialogTitle className="mt-6 flex items-center gap-3"><img src={crest} alt="CVSZ crest" width="50" height="50" />CVSZ</DialogTitle><DialogDescription className="sr-only">Council website navigation</DialogDescription>
       <nav className="flex flex-col" aria-label="Mobile navigation">{mainNavigation.slice(0, 3).map(item => <Link key={item.to} to={item.to} className="border-b border-hero-foreground/15 py-4" onClick={() => setMobile(false)}>{item.name}</Link>)}<Link to="/practices" className="border-b border-hero-foreground/15 py-4" onClick={() => setMobile(false)}>Veterinary Practices</Link>{mainNavigation.slice(3).map(item => <Link key={item.to} to={item.to} className="border-b border-hero-foreground/15 py-4" onClick={() => setMobile(false)}>{item.name}</Link>)}</nav>
+      <div className="mobile-payments-menu" ref={mobilePaymentsDropdown}>
+        <Button variant="ghost" className="mobile-menu-toggle" aria-expanded={paymentsOpen} aria-controls="mobile-payment-menu" onClick={() => setPaymentsOpen(value => !value)}>Payments<ChevronDown className="size-4" /></Button>
+        {paymentsOpen && <PaymentMenu id="mobile-payment-menu" mobile />}
+      </div>
       <div className="mobile-account-menu" ref={mobileAccountDropdown} onKeyDown={event => {
         if (event.key === 'Escape') setAccountOpen(false);
       }}>
         <Button variant="gold" size="lg" className="mt-8 w-full" aria-expanded={accountOpen} aria-controls="mobile-account-menu" onClick={() => setAccountOpen(value => !value)}>Login / Register<ChevronDown className="size-4" /></Button>
         {accountOpen && <div id="mobile-account-menu" className="account-dropdown mobile-account-dropdown"><AccountMenuOptions onNavigate={() => { setAccountOpen(false); setMobile(false); }} /></div>}
       </div>
+      <div className="mobile-cart-action"><CartButton itemCount={itemCount} onClick={() => { setMobile(false); openCart(); }} /></div>
     </DialogContent></Dialog>
   </>;
+}
+
+function PaymentMenu({ id, mobile = false }: { id: string; mobile?: boolean }) {
+  const { cart, addItem } = useContext(PaymentCartContext);
+  return <div id={id} className={`payment-menu${mobile ? ' payment-menu-mobile' : ''}`}>
+    {paymentServices.map(service => {
+      const added = cart.includes(service.id);
+      return <article className="payment-service" key={service.id}>
+        <h3>{service.name}</h3>
+        <p className="payment-service-price">${service.amount}</p>
+        <Button size="sm" variant={added ? 'outline' : 'gold'} disabled={added} onClick={() => addItem(service.id)}>{added ? 'Added' : 'Pay this'}</Button>
+      </article>;
+    })}
+  </div>;
+}
+
+function CartButton({ itemCount, onClick }: { itemCount: number; onClick: () => void }) {
+  return <Button variant="ghost" size="icon" className="cart-trigger" aria-label={`Open cart${itemCount ? `, ${itemCount} ${itemCount === 1 ? 'item' : 'items'}` : ', empty'}`} onClick={onClick}>
+    <ShoppingCart aria-hidden="true" />
+    {itemCount > 0 && <span className="cart-count" aria-hidden="true">{itemCount}</span>}
+  </Button>;
+}
+
+function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+  const { cart, removeItem, subtotal } = useContext(PaymentCartContext);
+  const items = cart.map(id => paymentServices.find(service => service.id === id)!);
+  return <Dialog open={open} onOpenChange={onOpenChange}>
+    <DialogContent className="cart-drawer">
+      <div className="cart-drawer-heading">
+        <div><DialogTitle className="text-xl text-primary">Your cart</DialogTitle><DialogDescription className="mt-2">Review Council services selected for payment.</DialogDescription></div>
+      </div>
+      {items.length === 0 ? <p className="cart-empty">Your cart is empty. Choose a service from Payments to get started.</p> : <>
+        <ul className="cart-items">
+          {items.map(item => <li className="cart-item" key={item.id}>
+            <div><h3>{item.name}</h3><p>${item.amount}</p></div>
+            <Button variant="ghost" size="icon" aria-label={`Remove ${item.name} from cart`} onClick={() => removeItem(item.id)}><Trash2 /></Button>
+          </li>)}
+        </ul>
+        <div className="cart-summary"><span>Subtotal</span><strong>${subtotal}</strong></div>
+        <p className="cart-notice">Payments are not available yet. Nothing will be charged or submitted.</p>
+        <Button className="w-full" disabled>Checkout — Coming Soon</Button>
+      </>}
+    </DialogContent>
+  </Dialog>;
 }
 
 function AccountMenuOptions({ onNavigate }: { onNavigate: () => void }) {

@@ -33,6 +33,34 @@ describe('Surgeon verification safeguards', () => {
   });
 });
 
+describe('Payments cart', () => {
+  it('adds a service, shows the subtotal, and removes it from the cart', async () => {
+    const router = createRouter({ routeTree, history: createMemoryHistory({ initialEntries: ['/'] }), context: { queryClient: new QueryClient() } });
+    await router.load();
+    render(<RouterProvider router={router} />);
+
+    expect(screen.getByRole('navigation', { name: 'Secondary navigation' }).querySelector('a[href="/complaints"]')).toBeInTheDocument();
+    expect(screen.queryByRole('navigation', { name: 'Main navigation' })?.querySelector('a[href="/complaints"]')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Payments' }));
+    expect(screen.getAllByRole('button', { name: 'Pay this' })).toHaveLength(6);
+    for (const service of ['Registration fee', 'Certificate of registration', 'Annual fee', 'Surgery licencing fee', 'Hospital Licensing fees', 'Letter of Good Standing']) {
+      expect(screen.getByRole('heading', { name: service })).toBeInTheDocument();
+    }
+    for (const amount of ['$125', '$25', '$150', '$250', '$300', '$75']) {
+      expect(screen.getByText(amount)).toBeInTheDocument();
+    }
+    fireEvent.click(screen.getAllByRole('button', { name: 'Pay this' })[0]!);
+    expect(screen.getByRole('button', { name: 'Added' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Open cart, 1 item' }));
+
+    expect(screen.getByRole('heading', { name: 'Your cart' })).toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: 'Your cart' }).querySelector('.cart-summary strong')).toHaveTextContent('$125');
+    expect(screen.getByRole('button', { name: 'Checkout — Coming Soon' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Remove Registration fee from cart' }));
+    expect(screen.getByText(/Your cart is empty/)).toBeInTheDocument();
+  });
+});
+
 describe('Council articles', () => {
   it('shows the three articles and links to official updates without sample labels', async () => {
     const router = createRouter({ routeTree, history: createMemoryHistory({ initialEntries: ['/news'] }), context: { queryClient: new QueryClient() } });
