@@ -39,6 +39,7 @@ describe('Payments cart', () => {
     await router.load();
     render(<RouterProvider router={router} />);
 
+    expect(document.querySelector('.mobile-cart-float')).not.toBeInTheDocument();
     expect(screen.getByRole('navigation', { name: 'Secondary navigation' }).querySelector('a[href="/complaints"]')).toBeInTheDocument();
     expect(screen.queryByRole('navigation', { name: 'Main navigation' })?.querySelector('a[href="/complaints"]')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Payments' }));
@@ -52,11 +53,19 @@ describe('Payments cart', () => {
     fireEvent.click(screen.getAllByRole('button', { name: 'Pay this' })[0]!);
     expect(screen.getByRole('heading', { name: 'Your cart' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Close' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Open cart, 1 item' }));
+    const mobileCartButton = document.querySelector('.mobile-cart-float button');
+    expect(mobileCartButton).toHaveAccessibleName('Open cart, 1 item');
+    fireEvent.click(mobileCartButton!);
 
     expect(screen.getByRole('heading', { name: 'Your cart' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Registration fee' })).toBeInTheDocument();
     expect(screen.getByRole('dialog', { name: 'Your cart' }).querySelector('.cart-summary strong')).toHaveTextContent('$125');
+    const paynowMethod = screen.getByRole('radio', { name: 'Paynow' });
+    const bankAccountMethod = screen.getByRole('radio', { name: 'Bank Account' });
+    expect(paynowMethod).toBeChecked();
+    fireEvent.click(bankAccountMethod);
+    expect(bankAccountMethod).toBeChecked();
+    expect(paynowMethod).not.toBeChecked();
     expect(screen.getByRole('button', { name: 'Checkout' })).toBeDisabled();
     expect(screen.queryByText(/Payments are not available yet/)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Remove Registration fee from cart' }));

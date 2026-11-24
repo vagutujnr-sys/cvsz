@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode, type FormEvent } from 'react';
 import { Link, useRouterState } from '@tanstack/react-router';
-import { ArrowRight, ChevronDown, Menu, LoaderCircle, Mail, Phone, Facebook, Linkedin, Twitter, MessageCircle, ShoppingCart, Trash2 } from 'lucide-react';
+import { ArrowRight, ChevronDown, Menu, LoaderCircle, Mail, Phone, Facebook, Linkedin, Twitter, MessageCircle, ShoppingCart, Trash2, Landmark } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import crest from "@/assets/cvsz-logo.png";
@@ -31,6 +31,7 @@ const paymentServices = [
   { id: 'letter-of-good-standing', name: 'Letter of Good Standing', amount: 75 },
 ] as const;
 type PaymentServiceId = typeof paymentServices[number]['id'];
+type PaymentMethod = 'paynow' | 'bank-account';
 type PaymentCartContextValue = {
   cart: PaymentServiceId[];
   itemCount: number;
@@ -177,6 +178,7 @@ function Header() {
       </div>
       <div className="mobile-cart-action"><CartButton itemCount={itemCount} onClick={() => { setMobile(false); openCart(); }} /></div>
     </DialogContent></Dialog>
+    {itemCount > 0 && <div className="mobile-cart-float"><CartButton itemCount={itemCount} onClick={openCart} /></div>}
   </>;
 }
 
@@ -203,6 +205,7 @@ function CartButton({ itemCount, onClick }: { itemCount: number; onClick: () => 
 
 function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const { cart, removeItem, subtotal } = useContext(PaymentCartContext);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('paynow');
   const items = cart.map(id => paymentServices.find(service => service.id === id)!);
   return <Dialog open={open} onOpenChange={onOpenChange}>
     <DialogContent className="cart-drawer">
@@ -217,6 +220,21 @@ function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (open
           </li>)}
         </ul>
         <div className="cart-summary"><span>Subtotal</span><strong>${subtotal}</strong></div>
+        <fieldset className="cart-payment-methods">
+          <legend>Payment methods</legend>
+          <div className="cart-payment-method-list">
+            <label className={`cart-payment-method paynow-method${paymentMethod === 'paynow' ? ' selected' : ''}`}>
+              <input type="radio" name="cart-payment-method" value="paynow" aria-label="Paynow" checked={paymentMethod === 'paynow'} onChange={() => setPaymentMethod('paynow')} />
+              <span className="paynow-mark" aria-hidden="true">P</span>
+              <span className="paynow-wordmark" aria-hidden="true">Paynow</span>
+            </label>
+            <label className={`cart-payment-method bank-account-method${paymentMethod === 'bank-account' ? ' selected' : ''}`}>
+              <input type="radio" name="cart-payment-method" value="bank-account" aria-label="Bank Account" checked={paymentMethod === 'bank-account'} onChange={() => setPaymentMethod('bank-account')} />
+              <Landmark aria-hidden="true" />
+              <span>Bank Account</span>
+            </label>
+          </div>
+        </fieldset>
         <Button className="w-full" disabled>Checkout</Button>
       </>}
     </DialogContent>
