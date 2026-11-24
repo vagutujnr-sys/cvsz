@@ -235,7 +235,7 @@ function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (open
             </label>
           </div>
         </fieldset>
-        <Button className="w-full" disabled>Checkout</Button>
+        <Button className="w-full cart-checkout" disabled>Checkout</Button>
       </>}
     </DialogContent>
   </Dialog>;
