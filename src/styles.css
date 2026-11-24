@@ -189,7 +189,7 @@ a,button { touch-action: manipulation; }
 @keyframes news-ticker-scroll { to { transform:translateX(-50%); } }
 .site-header { position: absolute; top:72px; left: 0; right: 0; z-index: 40; color: var(--hero-foreground); transition: background .3s; }
 .site-header.home-header:not(.scrolled) { color:var(--primary); }
-.home-header:not(.scrolled) .desktop-nav .nav-link { font-size:16px; text-shadow:1px 2px 3px oklch(1 0 0 / 90%); }
+.home-header:not(.scrolled) .desktop-nav .nav-link { text-shadow:none; }
 .site-header.scrolled { position: fixed; top:0; background: var(--institution); box-shadow: 0 2px 14px color-mix(in oklch,var(--foreground) 10%,transparent); }
 .header-inner { width:80%; max-width:1536px; margin: auto; padding: 12px 0; display: flex; align-items: center; gap: 30px; }
 .brand { display:flex; align-items:center; gap:14px; flex-shrink:0; }
@@ -199,9 +199,13 @@ a,button { touch-action: manipulation; }
 .header-crest-contained { align-self:center; margin-bottom:0; }
 .header-crest.header-crest-contained img { width:78px; height:78px; }
 .brand-name { max-width:180px; font-size:12px; font-weight:600; line-height:1.55; }
-.desktop-nav { display:flex; align-items:center; justify-content:flex-end; gap:21px; flex:0 1 auto; margin-left:auto; }
-.desktop-nav .nav-link { font-size:12px; font-weight:500; white-space:nowrap; padding:9px 6px; position:relative; border-radius:4px; transition:background-color .2s ease; }
-.nav-link[data-status=active]::after { content:''; height:2px; background:var(--accent); position:absolute; bottom:3px; left:0; right:0; }
+.desktop-menu-container { display:flex; align-items:center; gap:18px; margin-left:auto; padding:5px 7px 5px 11px; border:1px solid oklch(1 0 0 / 24%); border-radius:999px; background:oklch(0.25 0.055 157 / 78%); backdrop-filter:blur(10px); box-shadow:0 6px 22px oklch(0.18 0.04 157 / 24%); }
+.desktop-menu-container .desktop-nav .nav-link { color:var(--hero-foreground); }
+.desktop-nav { display:flex; align-items:center; justify-content:flex-end; gap:21px; flex:0 1 auto; }
+.desktop-nav .nav-link { font-size:16px; font-weight:500; white-space:nowrap; padding:9px 11px; position:relative; border-radius:999px; transition:background-color .2s ease; }
+.nav-link[data-status=active] { background:var(--accent); color:var(--accent-foreground) !important; }
+.nav-link[data-status=active]::after { content:none; }
+button { border-radius:9999px; }
 .desktop-nav .nav-link:hover { color:inherit; background-color:oklch(1 0 0 / 18%); }
 .hero { --hero-foreground: oklch(0.28 0.055 157); position:relative; min-height:740px; height: min(860px,94svh); color:var(--hero-foreground); background:var(--institution); overflow:hidden; }
 .hero-image { width:100%; height:100%; position:absolute; inset:0; object-fit:cover; object-position:center; }

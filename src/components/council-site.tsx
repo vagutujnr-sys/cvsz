@@ -75,19 +75,21 @@ function Header() {
     <header className={`site-header ${isHome ? 'home-header' : ''} ${scrolled ? 'scrolled' : ''}`}>
       <div className="header-inner">
         <Link to="/" className={`brand header-crest ${isHome ? '' : 'header-crest-contained'}`} aria-label="CVSZ home"><img src={crest} alt="Official CVSZ crest" width="150" height="150" /></Link>
-        <nav className="desktop-nav" aria-label="Main navigation">
-          {mainNavigation.slice(0, 3).map(item => <Link key={item.to} to={item.to} activeOptions={{ exact: true }} className="nav-link">{item.name}</Link>)}
-          <div className="relative" ref={dropdown} onKeyDown={event => { if (event.key === 'Escape') setPractices(false); }}>
-            <Button variant="ghost" className="nav-link h-auto" aria-expanded={practices} aria-controls="practice-menu" onClick={() => setPractices(!practices)}>Veterinary Practices <ChevronDown className="size-3" /></Button>
-            {practices && <div id="practice-menu" className="absolute left-0 top-full w-64 border border-border bg-background p-2 text-foreground shadow-lg">
-              <Link to="/practices" className="block p-3 text-sm hover:bg-surface" onClick={() => setPractices(false)}>Practice standards</Link>
-              <Link to="/practices" hash="registration" className="block p-3 text-sm hover:bg-surface" onClick={() => setPractices(false)}>Practice registration</Link>
-              <Link to="/practices" hash="guidance" className="block p-3 text-sm hover:bg-surface" onClick={() => setPractices(false)}>Guidance for animal owners</Link>
-            </div>}
-          </div>
-          {mainNavigation.slice(3).map(item => <Link key={item.to} to={item.to} className="nav-link">{item.name}</Link>)}
-        </nav>
-        <Button variant="gold" className="hidden shrink-0 rounded-sm text-xs min-[981px]:inline-flex" onClick={() => open('verify')}><img src={crest} alt="" aria-hidden="true" width="20" height="20" className="size-5 object-contain" />Verify a Surgeon</Button>
+        <div className="desktop-menu-container">
+          <nav className="desktop-nav" aria-label="Main navigation">
+            {mainNavigation.slice(0, 3).map(item => <Link key={item.to} to={item.to} activeOptions={{ exact: true }} className="nav-link">{item.name}</Link>)}
+            <div className="relative" ref={dropdown} onKeyDown={event => { if (event.key === 'Escape') setPractices(false); }}>
+              <Button variant="ghost" className="nav-link h-auto" aria-expanded={practices} aria-controls="practice-menu" onClick={() => setPractices(!practices)}>Veterinary Practices <ChevronDown className="size-3" /></Button>
+              {practices && <div id="practice-menu" className="absolute left-0 top-full w-64 border border-border bg-background p-2 text-foreground shadow-lg">
+                <Link to="/practices" className="block p-3 text-sm hover:bg-surface" onClick={() => setPractices(false)}>Practice standards</Link>
+                <Link to="/practices" hash="registration" className="block p-3 text-sm hover:bg-surface" onClick={() => setPractices(false)}>Practice registration</Link>
+                <Link to="/practices" hash="guidance" className="block p-3 text-sm hover:bg-surface" onClick={() => setPractices(false)}>Guidance for animal owners</Link>
+              </div>}
+            </div>
+            {mainNavigation.slice(3).map(item => <Link key={item.to} to={item.to} className="nav-link">{item.name}</Link>)}
+          </nav>
+          <Button variant="gold" className="hidden shrink-0 rounded-full text-xs min-[981px]:inline-flex" onClick={() => open('verify')}><img src={crest} alt="" aria-hidden="true" width="20" height="20" className="size-5 object-contain" />Verify a Surgeon</Button>
+        </div>
         <Button variant="hero" size="icon" className="mobile-toggle border-0" aria-label="Open navigation" onClick={() => setMobile(true)}><Menu /></Button>
       </div>
     </header>
