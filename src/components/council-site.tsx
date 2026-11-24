@@ -74,7 +74,7 @@ function Header() {
     </aside>
     <header className={`site-header ${isHome ? 'home-header' : ''} ${scrolled ? 'scrolled' : ''}`}>
       <div className="header-inner">
-        <Link to="/" className={`brand header-crest ${isHome ? '' : 'header-crest-contained'}`} aria-label="CVSZ home"><img src={crest} alt="Official CVSZ crest" width="150" height="150" /></Link>
+        <Link to="/" className={`brand header-crest ${isHome && !scrolled ? '' : 'header-crest-contained'}`} aria-label="CVSZ home"><img src={crest} alt="Official CVSZ crest" width="150" height="150" /></Link>
         <div className="desktop-menu-container">
           <nav className="desktop-nav" aria-label="Main navigation">
             {mainNavigation.slice(0, 3).map(item => <Link key={item.to} to={item.to} activeOptions={{ exact: true }} className="nav-link">{item.name}</Link>)}
