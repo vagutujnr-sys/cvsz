@@ -221,7 +221,7 @@ a,button { touch-action: manipulation; }
 .mobile-payments-menu { display:none; }
 .mobile-menu-toggle { display:flex; width:100%; justify-content:space-between; border-bottom:1px solid oklch(1 0 0 / 15%); padding:16px 0; color:var(--hero-foreground); }
 .mobile-menu-toggle:hover { background:transparent; color:var(--hero-foreground); }
-.cart-drawer { position:fixed; inset:0 0 0 auto; z-index:60; display:flex; width:min(440px,100vw); height:100dvh; max-height:100dvh; flex-direction:column; gap:0; overflow-y:auto; border:0; border-left:1px solid var(--border); border-radius:0; padding:28px; background:var(--background); box-shadow:-16px 0 48px oklch(0.18 0.04 157 / 18%); transform:none; }
+.cart-drawer { position:fixed; inset:0 0 0 auto; z-index:60; box-sizing:border-box; display:flex; width:min(440px,100vw); height:100vh; height:100dvh; max-width:none; max-height:none; flex-direction:column; gap:0; overflow-y:auto; border:0; border-left:1px solid var(--border); border-radius:0; padding:24px; background:var(--background); box-shadow:-16px 0 48px oklch(0.18 0.04 157 / 18%); transform:none; }
 .cart-drawer-heading { display:flex; align-items:flex-start; justify-content:space-between; padding:12px 28px 20px 0; border-bottom:1px solid var(--border); }
 .cart-empty { margin:auto 0; padding:30px 12px; color:var(--muted-foreground); font-size:14px; line-height:1.7; text-align:center; }
 .cart-items { display:grid; gap:0; overflow:auto; margin:0; padding:0; list-style:none; }
@@ -232,7 +232,6 @@ a,button { touch-action: manipulation; }
 .cart-item button:hover { color:var(--destructive); background:var(--surface); }
 .cart-summary { display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding:22px 0 14px; color:var(--foreground); }
 .cart-summary strong { color:var(--primary); font-size:20px; }
-.cart-notice { margin:8px 0 18px; padding:12px 14px; border-left:2px solid var(--accent); background:var(--surface); color:var(--muted-foreground); font-size:12px; line-height:1.6; }
 .mobile-cart-action { display:none; }
 .nav-link[data-status=active] { background:var(--accent); color:var(--accent-foreground) !important; }
 .nav-link[data-status=active]::after { content:none; }

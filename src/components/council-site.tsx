@@ -144,7 +144,7 @@ function Header() {
               if (event.key === 'Escape') setPaymentsOpen(false);
             }}>
               <Button variant="ghost" className="nav-link h-auto" aria-expanded={paymentsOpen} aria-controls="payment-menu" onClick={() => setPaymentsOpen(value => !value)}>Payments<ChevronDown className="size-3" /></Button>
-              {paymentsOpen && <PaymentMenu id="payment-menu" />}
+              {paymentsOpen && <PaymentMenu id="payment-menu" onAdd={() => { setPaymentsOpen(false); openCart(); }} />}
             </div>
             {mainNavigation.slice(3).map(item => <Link key={item.to} to={item.to} className="nav-link">{item.name}</Link>)}
           </nav>
@@ -167,7 +167,7 @@ function Header() {
       <nav className="flex flex-col" aria-label="Mobile navigation">{mainNavigation.slice(0, 3).map(item => <Link key={item.to} to={item.to} className="border-b border-hero-foreground/15 py-4" onClick={() => setMobile(false)}>{item.name}</Link>)}<Link to="/practices" className="border-b border-hero-foreground/15 py-4" onClick={() => setMobile(false)}>Veterinary Practices</Link>{mainNavigation.slice(3).map(item => <Link key={item.to} to={item.to} className="border-b border-hero-foreground/15 py-4" onClick={() => setMobile(false)}>{item.name}</Link>)}</nav>
       <div className="mobile-payments-menu" ref={mobilePaymentsDropdown}>
         <Button variant="ghost" className="mobile-menu-toggle" aria-expanded={paymentsOpen} aria-controls="mobile-payment-menu" onClick={() => setPaymentsOpen(value => !value)}>Payments<ChevronDown className="size-4" /></Button>
-        {paymentsOpen && <PaymentMenu id="mobile-payment-menu" mobile />}
+        {paymentsOpen && <PaymentMenu id="mobile-payment-menu" mobile onAdd={() => { setPaymentsOpen(false); setMobile(false); openCart(); }} />}
       </div>
       <div className="mobile-account-menu" ref={mobileAccountDropdown} onKeyDown={event => {
         if (event.key === 'Escape') setAccountOpen(false);
@@ -180,7 +180,7 @@ function Header() {
   </>;
 }
 
-function PaymentMenu({ id, mobile = false }: { id: string; mobile?: boolean }) {
+function PaymentMenu({ id, mobile = false, onAdd }: { id: string; mobile?: boolean; onAdd: () => void }) {
   const { cart, addItem } = useContext(PaymentCartContext);
   return <div id={id} className={`payment-menu${mobile ? ' payment-menu-mobile' : ''}`}>
     {paymentServices.map(service => {
@@ -188,7 +188,7 @@ function PaymentMenu({ id, mobile = false }: { id: string; mobile?: boolean }) {
       return <article className="payment-service" key={service.id}>
         <h3>{service.name}</h3>
         <p className="payment-service-price">${service.amount}</p>
-        <Button size="sm" variant={added ? 'outline' : 'gold'} disabled={added} onClick={() => addItem(service.id)}>{added ? 'Added' : 'Pay this'}</Button>
+        <Button size="sm" variant={added ? 'outline' : 'gold'} disabled={added} onClick={() => { addItem(service.id); onAdd(); }}>{added ? 'Added' : 'Pay this'}</Button>
       </article>;
     })}
   </div>;
@@ -217,8 +217,7 @@ function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (open
           </li>)}
         </ul>
         <div className="cart-summary"><span>Subtotal</span><strong>${subtotal}</strong></div>
-        <p className="cart-notice">Payments are not available yet. Nothing will be charged or submitted.</p>
-        <Button className="w-full" disabled>Checkout — Coming Soon</Button>
+        <Button className="w-full" disabled>Checkout</Button>
       </>}
     </DialogContent>
   </Dialog>;

@@ -50,12 +50,15 @@ describe('Payments cart', () => {
       expect(screen.getByText(amount)).toBeInTheDocument();
     }
     fireEvent.click(screen.getAllByRole('button', { name: 'Pay this' })[0]!);
-    expect(screen.getByRole('button', { name: 'Added' })).toBeDisabled();
+    expect(screen.getByRole('heading', { name: 'Your cart' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Close' }));
     fireEvent.click(screen.getByRole('button', { name: 'Open cart, 1 item' }));
 
     expect(screen.getByRole('heading', { name: 'Your cart' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Registration fee' })).toBeInTheDocument();
     expect(screen.getByRole('dialog', { name: 'Your cart' }).querySelector('.cart-summary strong')).toHaveTextContent('$125');
-    expect(screen.getByRole('button', { name: 'Checkout — Coming Soon' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Checkout' })).toBeDisabled();
+    expect(screen.queryByText(/Payments are not available yet/)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Remove Registration fee from cart' }));
     expect(screen.getByText(/Your cart is empty/)).toBeInTheDocument();
   });
