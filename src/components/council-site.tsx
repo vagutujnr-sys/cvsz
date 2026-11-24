@@ -23,23 +23,34 @@ const secondaryNavigation = [
 
 export function CouncilSite({ children }: { children: ReactNode }) {
   const [kind, setKind] = useState<ModalKind>(null);
-  return <ModalContext.Provider value={setKind}><Header />{children}<Footer /><CouncilModal kind={kind} onClose={() => setKind(null)} /></ModalContext.Provider>;
+  return <ModalContext.Provider value={setKind}><Header />{children}<Footer /><CouncilModal kind={kind} onClose={() => setKind(null)} /><WhatsAppWidget /></ModalContext.Provider>;
+}
+
+function WhatsAppWidget() {
+  return <a className="whatsapp-float" href="https://wa.me/263772347291" target="_blank" rel="noreferrer" aria-label="Chat with the Council on WhatsApp" title="Chat on WhatsApp"><MessageCircle aria-hidden="true" /></a>;
 }
 
 function Header() {
-  const open = useCouncilModal();
   const isHome = useRouterState({ select: state => state.location.pathname === '/' });
   const [scrolled, setScrolled] = useState(false);
   const [mobile, setMobile] = useState(false);
   const [practices, setPractices] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const dropdown = useRef<HTMLDivElement>(null);
+  const accountDropdown = useRef<HTMLDivElement>(null);
+  const mobileAccountDropdown = useRef<HTMLDivElement>(null);
+  const accountTrigger = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     const update = () => setScrolled(window.scrollY > 90);
     update(); window.addEventListener('scroll', update, { passive: true });
     return () => window.removeEventListener('scroll', update);
   }, []);
   useEffect(() => {
-    const dismiss = (event: MouseEvent) => { if (event.target instanceof Node && !dropdown.current?.contains(event.target)) setPractices(false); };
+    const dismiss = (event: MouseEvent) => {
+      if (!(event.target instanceof Node)) return;
+      if (!dropdown.current?.contains(event.target)) setPractices(false);
+      if (!accountDropdown.current?.contains(event.target) && !mobileAccountDropdown.current?.contains(event.target)) setAccountOpen(false);
+    };
     document.addEventListener('click', dismiss); return () => document.removeEventListener('click', dismiss);
   }, []);
   return <>
@@ -52,7 +63,7 @@ function Header() {
         <div className="social-links" aria-label="Council contact and social channels">
           <span aria-label="Facebook profile link unavailable" title="Official Facebook link not published"><Facebook /></span>
           <span aria-label="LinkedIn profile link unavailable" title="Official LinkedIn link not published"><Linkedin /></span>
-          <a href="https://wa.me/263775471642" target="_blank" rel="noreferrer" aria-label="WhatsApp the Council" title="WhatsApp"><MessageCircle /></a>
+          <a href="https://wa.me/263772347291" target="_blank" rel="noreferrer" aria-label="WhatsApp the Council" title="WhatsApp"><MessageCircle /></a>
           <a href="mailto:registrar@cvsz.org" aria-label="Email the Council" title="Email"><Mail /></a>
           <span aria-label="Twitter profile link unavailable" title="Official Twitter link not published"><Twitter /></span>
         </div>
@@ -88,16 +99,36 @@ function Header() {
             </div>
             {mainNavigation.slice(3).map(item => <Link key={item.to} to={item.to} className="nav-link">{item.name}</Link>)}
           </nav>
-          <Button variant="gold" className="hidden shrink-0 rounded-full text-xs min-[981px]:inline-flex" onClick={() => open('verify')}><img src={crest} alt="" aria-hidden="true" width="20" height="20" className="size-5 object-contain" />Verify a Surgeon</Button>
+            <div className="account-menu" ref={accountDropdown} onKeyDown={event => {
+              if (event.key === 'Escape') {
+                setAccountOpen(false);
+                accountTrigger.current?.focus();
+              }
+            }}>
+              <Button ref={accountTrigger} variant="gold" className="hidden shrink-0 rounded-full text-xs min-[981px]:inline-flex" aria-expanded={accountOpen} aria-controls="desktop-account-menu" onClick={() => setAccountOpen(value => !value)}>Login / Register<ChevronDown className="size-3" /></Button>
+              {accountOpen && <div id="desktop-account-menu" className="account-dropdown"><AccountMenuOptions onNavigate={() => setAccountOpen(false)} /></div>}
+            </div>
         </div>
         <Button variant="hero" size="icon" className="mobile-toggle border-0" aria-label="Open navigation" onClick={() => setMobile(true)}><Menu /></Button>
       </div>
     </header>
-    <Dialog open={mobile} onOpenChange={setMobile}><DialogContent className="inset-y-0 left-auto right-0 h-svh max-h-svh w-[min(90vw,380px)] translate-x-0 translate-y-0 overflow-y-auto rounded-none bg-institution p-7 text-hero-foreground sm:rounded-none">
+    <Dialog open={mobile} onOpenChange={value => { setMobile(value); if (!value) setAccountOpen(false); }}><DialogContent className="inset-y-0 left-auto right-0 h-svh max-h-svh w-[min(90vw,380px)] translate-x-0 translate-y-0 overflow-y-auto rounded-none bg-institution p-7 text-hero-foreground sm:rounded-none">
       <DialogTitle className="mt-6 flex items-center gap-3"><img src={crest} alt="CVSZ crest" width="50" height="50" />CVSZ</DialogTitle><DialogDescription className="sr-only">Council website navigation</DialogDescription>
       <nav className="flex flex-col" aria-label="Mobile navigation">{mainNavigation.slice(0, 3).map(item => <Link key={item.to} to={item.to} className="border-b border-hero-foreground/15 py-4" onClick={() => setMobile(false)}>{item.name}</Link>)}<Link to="/practices" className="border-b border-hero-foreground/15 py-4" onClick={() => setMobile(false)}>Veterinary Practices</Link>{mainNavigation.slice(3).map(item => <Link key={item.to} to={item.to} className="border-b border-hero-foreground/15 py-4" onClick={() => setMobile(false)}>{item.name}</Link>)}</nav>
-      <Button variant="gold" size="lg" onClick={() => { setMobile(false); open('verify'); }}><img src={crest} alt="" aria-hidden="true" width="20" height="20" className="size-5 object-contain" />Verify a Surgeon</Button>
+      <div className="mobile-account-menu" ref={mobileAccountDropdown} onKeyDown={event => {
+        if (event.key === 'Escape') setAccountOpen(false);
+      }}>
+        <Button variant="gold" size="lg" className="mt-8 w-full" aria-expanded={accountOpen} aria-controls="mobile-account-menu" onClick={() => setAccountOpen(value => !value)}>Login / Register<ChevronDown className="size-4" /></Button>
+        {accountOpen && <div id="mobile-account-menu" className="account-dropdown mobile-account-dropdown"><AccountMenuOptions onNavigate={() => { setAccountOpen(false); setMobile(false); }} /></div>}
+      </div>
     </DialogContent></Dialog>
+  </>;
+}
+
+function AccountMenuOptions({ onNavigate }: { onNavigate: () => void }) {
+  return <>
+    <Link to="/vet-account" className="account-option" onClick={onNavigate}><span className="account-option-title">Access Vet Account</span></Link>
+    <Link to="/vet-registration" className="account-option" onClick={onNavigate}><span className="account-option-title">Register As A Legal Vet</span><span className="account-option-note">A Registration Fee Will Be Required.</span></Link>
   </>;
 }
 

@@ -19,6 +19,8 @@ import { Route as PracticesRouteImport } from './routes/practices'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as ProfessionsRouteImport } from './routes/professions'
 import { Route as TermsOfUseRouteImport } from './routes/terms-of-use'
+import { Route as VetAccountRouteImport } from './routes/vet-account'
+import { Route as VetRegistrationRouteImport } from './routes/vet-registration'
 import { Route as NewsIndexRouteImport } from './routes/news.index'
 import { Route as NewsSlugRouteImport } from './routes/news.$slug'
 
@@ -72,6 +74,16 @@ const TermsOfUseRoute = TermsOfUseRouteImport.update({
   path: '/terms-of-use',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VetAccountRoute = VetAccountRouteImport.update({
+  id: '/vet-account',
+  path: '/vet-account',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VetRegistrationRoute = VetRegistrationRouteImport.update({
+  id: '/vet-registration',
+  path: '/vet-registration',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NewsIndexRoute = NewsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -94,6 +106,8 @@ export interface FileRoutesByFullPath {
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/professions': typeof ProfessionsRoute
   '/terms-of-use': typeof TermsOfUseRoute
+  '/vet-account': typeof VetAccountRoute
+  '/vet-registration': typeof VetRegistrationRoute
   '/news/$slug': typeof NewsSlugRoute
   '/news/': typeof NewsIndexRoute
 }
@@ -107,6 +121,8 @@ export interface FileRoutesByTo {
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/professions': typeof ProfessionsRoute
   '/terms-of-use': typeof TermsOfUseRoute
+  '/vet-account': typeof VetAccountRoute
+  '/vet-registration': typeof VetRegistrationRoute
   '/news/$slug': typeof NewsSlugRoute
   '/news': typeof NewsIndexRoute
 }
@@ -122,6 +138,8 @@ export interface FileRoutesById {
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/professions': typeof ProfessionsRoute
   '/terms-of-use': typeof TermsOfUseRoute
+  '/vet-account': typeof VetAccountRoute
+  '/vet-registration': typeof VetRegistrationRoute
   '/news/$slug': typeof NewsSlugRoute
   '/news/': typeof NewsIndexRoute
 }
@@ -138,6 +156,8 @@ export interface FileRouteTypes {
     | '/privacy-policy'
     | '/professions'
     | '/terms-of-use'
+    | '/vet-account'
+    | '/vet-registration'
     | '/news/$slug'
     | '/news/'
   fileRoutesByTo: FileRoutesByTo
@@ -151,6 +171,8 @@ export interface FileRouteTypes {
     | '/privacy-policy'
     | '/professions'
     | '/terms-of-use'
+    | '/vet-account'
+    | '/vet-registration'
     | '/news/$slug'
     | '/news'
   id:
@@ -165,6 +187,8 @@ export interface FileRouteTypes {
     | '/privacy-policy'
     | '/professions'
     | '/terms-of-use'
+    | '/vet-account'
+    | '/vet-registration'
     | '/news/$slug'
     | '/news/'
   fileRoutesById: FileRoutesById
@@ -180,6 +204,8 @@ export interface RootRouteChildren {
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   ProfessionsRoute: typeof ProfessionsRoute
   TermsOfUseRoute: typeof TermsOfUseRoute
+  VetAccountRoute: typeof VetAccountRoute
+  VetRegistrationRoute: typeof VetRegistrationRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -254,6 +280,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsOfUseRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/vet-account': {
+      id: '/vet-account'
+      path: '/vet-account'
+      fullPath: '/vet-account'
+      preLoaderRoute: typeof VetAccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vet-registration': {
+      id: '/vet-registration'
+      path: '/vet-registration'
+      fullPath: '/vet-registration'
+      preLoaderRoute: typeof VetRegistrationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/news/': {
       id: '/news/'
       path: '/'
@@ -294,6 +334,8 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   ProfessionsRoute: ProfessionsRoute,
   TermsOfUseRoute: TermsOfUseRoute,
+  VetAccountRoute: VetAccountRoute,
+  VetRegistrationRoute: VetRegistrationRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

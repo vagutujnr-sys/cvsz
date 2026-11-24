@@ -33,7 +33,9 @@ function PrivacyPolicy() {
         <p className="editorial-copy mt-5 max-w-3xl">
           This website also loads a third-party live-chat widget from Tawk.to.
           Information you choose to send through the chat is sent to that
-          service. Please do not share sensitive or confidential details there.
+          service. The WhatsApp link opens WhatsApp, where messages are handled
+          under its privacy terms. Please do not share sensitive or confidential
+          details through either service.
         </p>
         <Link to="/contact" className="text-link mt-6">
           Contact the Council

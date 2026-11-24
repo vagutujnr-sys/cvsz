@@ -16,6 +16,10 @@ describe('Surgeon verification safeguards', () => {
     await router.load();
     render(<RouterProvider router={router} />);
     expect(screen.getByRole('link', { name: 'CVSZ home' })).toHaveClass('header-crest-contained');
+    expect(screen.getByRole('link', { name: 'Chat with the Council on WhatsApp' })).toHaveAttribute('href', 'https://wa.me/263772347291');
+    fireEvent.click(screen.getByRole('button', { name: 'Login / Register' }));
+    expect(screen.getByRole('link', { name: 'Access Vet Account' })).toHaveAttribute('href', '/vet-account');
+    expect(screen.getByRole('link', { name: /Register As A Legal Vet.*Registration Fee/ })).toHaveAttribute('href', '/vet-registration');
     const trigger = screen.getAllByRole('button', { name: 'Verify a Surgeon' }).at(0);
     if (!trigger) throw new Error('Verification action is missing');
     fireEvent.click(trigger);

@@ -203,6 +203,13 @@ a,button { touch-action: manipulation; }
 .desktop-menu-container .desktop-nav .nav-link { color:var(--hero-foreground); }
 .desktop-nav { display:flex; align-items:center; justify-content:flex-end; gap:21px; flex:0 1 auto; }
 .desktop-nav .nav-link { font-size:16px; font-weight:500; white-space:nowrap; padding:9px 11px; position:relative; border-radius:999px; transition:background-color .2s ease; }
+.account-menu,.mobile-account-menu { position:relative; }
+.account-dropdown { position:absolute; top:calc(100% + 10px); right:0; z-index:60; display:grid; width:min(280px,calc(100vw - 32px)); gap:2px; padding:8px; border:1px solid var(--border); border-radius:16px; background:var(--background); color:var(--foreground); box-shadow:0 14px 36px oklch(0.18 0.04 157 / 24%); }
+.account-option { display:grid; gap:4px; padding:12px 14px; border-radius:10px; transition:background-color .18s ease; }
+.account-option:hover,.account-option:focus-visible { background:var(--surface); outline:none; }
+.account-option-title { color:var(--primary); font-size:14px; font-weight:600; }
+.account-option-note { color:var(--muted-foreground); font-size:11px; line-height:1.4; }
+.mobile-account-dropdown { position:static; width:100%; margin-top:10px; }
 .nav-link[data-status=active] { background:var(--accent); color:var(--accent-foreground) !important; }
 .nav-link[data-status=active]::after { content:none; }
 button { border-radius:9999px; }
@@ -279,6 +286,15 @@ main:not(.home-page) .eyebrow::before { display:none; }
 .button-orbit::after { content:''; position:absolute; inset:-4px; border-radius:inherit; pointer-events:none; opacity:0; background-image:repeating-linear-gradient(90deg,var(--button-orbit-color,currentColor) 0 3px,transparent 3px 6px),repeating-linear-gradient(90deg,var(--button-orbit-color,currentColor) 0 3px,transparent 3px 6px),repeating-linear-gradient(0deg,var(--button-orbit-color,currentColor) 0 3px,transparent 3px 6px),repeating-linear-gradient(0deg,var(--button-orbit-color,currentColor) 0 3px,transparent 3px 6px); background-size:100% 1px,100% 1px,1px 100%,1px 100%; background-position:0 0,0 100%,0 0,100% 0; background-repeat:repeat-x,repeat-x,repeat-y,repeat-y; transition:opacity .2s ease; }
 .button-orbit:not(:disabled):hover::after,.button-orbit:focus-visible::after { opacity:.9; animation:button-ants .65s linear infinite; }
 @keyframes button-ants { to { background-position:6px 0,-6px 100%,0 6px,100% -6px; } }
+.whatsapp-float { position:fixed; right:94px; bottom:20px; z-index:45; display:grid; width:58px; height:58px; place-items:center; border:2px solid oklch(1 0 0 / 90%); border-radius:9999px; background:oklch(0.55 0.16 150); color:oklch(1 0 0); box-shadow:0 8px 24px oklch(0.2 0.04 157 / 24%); transition:transform .2s ease,background-color .2s ease; }
+.whatsapp-float svg { width:27px; height:27px; }
+.whatsapp-float::before { position:absolute; top:50%; right:calc(100% + 12px); padding:8px 12px; border-radius:9999px; background:var(--institution); color:var(--hero-foreground); content:'Chat on WhatsApp'; font-size:12px; font-weight:600; white-space:nowrap; opacity:0; pointer-events:none; transform:translate(4px,-50%); transition:opacity .2s ease,transform .2s ease; }
+.whatsapp-float:hover { background:oklch(0.49 0.16 150); transform:translateY(-2px); }
+.whatsapp-float:hover::before,.whatsapp-float:focus-visible::before { opacity:1; transform:translate(0,-50%); }
+.whatsapp-float:focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
+.vet-account-card { width:min(100%,440px); margin:auto; padding:32px; border:1px solid var(--border); border-radius:18px; background:var(--background); box-shadow:0 14px 40px oklch(0.2 0.03 157 / 8%); }
+.vet-account-crest { display:block; width:72px; height:72px; margin:0 auto 20px; object-fit:contain; }
+.vet-account-section { display:grid; min-height:100svh; place-items:center; padding:176px 6% 72px; }
 @media(min-width:1450px) { .hero-content { padding-top:224px; } }
 @media(max-width:1200px) { .desktop-nav { gap:18px; } .header-inner { gap:20px; } }
 @media(max-width:1100px) { .top-strip-inner { width:90%; gap:12px; } .secondary-nav { gap:10px; } .secondary-nav a { font-size:9px; } .social-links { display:none; } }
@@ -286,6 +302,7 @@ main:not(.home-page) .eyebrow::before { display:none; }
 @media(max-width:980px) { .desktop-nav { display:none; } .mobile-toggle { display:inline-flex; margin-left:auto; } .header-inner { padding:9px 0; } .hero h1 { font-size:54px; } .hero-content { padding-top:192px; } }
 @media(max-width:640px) { .top-contacts { display:none; } .top-strip-inner { justify-content:center; } }
 @media(max-width:640px) { .top-strip {height:34px;} .news-ticker {top:34px;height:30px;} .news-ticker-label {padding:0 10px;font-size:8px;} .news-ticker-item {gap:6px;padding:0 12px;font-size:10px;} .news-ticker-category {font-size:9px;} .news-ticker-all {gap:4px;padding:0 10px;font-size:8px;} .news-ticker-all svg {width:11px;height:11px;} .news-ticker-track {animation-duration:36s;} .top-strip-inner,.header-inner,.hero-content,.section-wrap,.page-banner-inner {width:88%;} .top-contacts a:first-child {display:none;} .top-contacts a {font-size:10px;} .social-links {gap:11px;} .site-header {top:64px;} .site-header.scrolled {top:0;} .site-header.home-header:not(.scrolled) .mobile-toggle { color:var(--primary); } .header-crest img { width:72px;height:82px; } .header-crest.header-crest-contained img { width:64px; height:64px; } .brand-name { font-size:10px; max-width:150px; } .hero { min-height:760px; height:96svh; max-height:930px; } .hero-image { object-position:64% center; } .hero::after { background:linear-gradient(90deg,oklch(1 0 0 / 96%) 0%,oklch(1 0 0 / 90%) 70%,oklch(1 0 0 / 78%) 100%); } .hero-content { padding-top:177px; } .hero h1 { font-size:42px; max-width:400px; } .hero-description { font-size:14px; } .hero-bottom {left:6%;right:6%;font-size:10px;} .hero-bottom .hero-tagline { display:none; } .section-wrap { padding-top:62px;padding-bottom:62px; } .section-heading { font-size:32px; } .page-banner {padding-top:180px;} .page-banner h1 {font-size:36px;} .photo-frame::after {right:-7px;bottom:-7px;} }
+@media(max-width:640px) { .vet-account-section { padding:156px 6% 64px; } }
 @media(max-width:980px) { .article-hero-inner { width:88%; grid-template-columns:1fr; gap:30px; padding:168px 0 50px; } .article-breadcrumb { margin-bottom:32px; } .article-hero-photo { max-width:760px; } }
 @media(max-width:640px) { .article-hero-inner { padding:168px 0 38px; gap:24px; } .article-breadcrumb { gap:6px; margin-bottom:28px; font-size:11px; } .article-category { font-size:10px; } .article-title { margin:13px 0 14px; font-size:36px; line-height:1.1; } .article-deck { font-size:16px; line-height:1.7; } .article-reading-time { margin-top:18px; } .article-hero-photo img { aspect-ratio:1.25; } .article-reading { padding:46px 0 56px; } .article-paragraph { font-size:16px; line-height:1.85; } .article-related-inner { width:88%; padding:52px 0 58px; } .article-related-heading { align-items:flex-start; flex-direction:column; gap:8px; } .article-related-heading h2 { font-size:28px; } .article-related-grid { grid-template-columns:1fr; gap:12px; } .article-related-card { min-height:0; padding:20px; } }
 @media(prefers-reduced-motion:reduce) { .news-ticker-viewport { overflow-x:auto; } }
